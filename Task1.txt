@@ -1,0 +1,40 @@
+create table route (
+	id serial primary key,
+	starting_point varchar(5) not null,
+	end_point varchar(5) not null
+);
+
+create table bus (
+	id serial primary key,
+	bus_number varchar(6) unique not null,
+	route_id integer references route(id) not null
+);
+
+create table driver (
+	id serial primary key,
+	full_name varchar (50) not null
+);
+
+create table journal (
+	id serial primary key,
+	driver_id integer references driver(id) not null,
+	bus_id integer references bus(id) not null,
+	time_drive timestamp not null
+);
+
+insert into route (starting_point, end_point) values 
+	('1-A', '100-B'), ('102-A', '2-B'), ('312-A', '204-B'), ('99-A', '1-B');
+	commit;
+
+insert into bus (bus_number, route_id) values 
+	('0001BB', 1), ('0002BB', 2), ('0003BB', 3), ('0004BB', 4);
+	commit;
+	
+insert into driver (full_name) values 
+	('Bek Bekov Bekovich'), ('Jek Jekov Jekovich'), ('Gek Gekov Gekovich'), ('Mek Mekov Mekovich');
+	commit;
+	
+insert into journal (driver_id, bus_id, time_drive) values
+	(1, 1, '2021-01-01 08:00'), (2, 2, '2021-01-01 08:00'), (3, 3, '2021-01-01 08:00'), (4, 4, '2021-01-01 08:00'),
+	(4, 1, '2021-01-02 08:00'), (3, 2, '2021-01-02 08:00'), (2, 3, '2021-01-02 08:00'), (1, 4, '2021-01-02 08:00');
+	commit;

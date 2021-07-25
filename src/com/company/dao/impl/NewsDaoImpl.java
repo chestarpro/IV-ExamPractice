@@ -6,6 +6,7 @@ import com.company.dao.NewsDao;
 
 import java.sql.*;
 import java.util.Date;
+import java.util.Scanner;
 
 public class NewsDaoImpl extends BaseDao implements NewsDao {
 
@@ -34,9 +35,9 @@ public class NewsDaoImpl extends BaseDao implements NewsDao {
     }
 
     @Override
-    public void displayNews(int year, int month, int date) {
+    public void showNews(String date) {
         String sql = "SELECT n.news_title, n.news_text FROM news n\n" +
-                "WHERE n.publication_time::date = '" + year + "-" + month + "-" + date +"'";
+                "WHERE n.publication_time::date = '" + date + "'";
 
         Connection connection = null;
         PreparedStatement statement = null;
@@ -52,7 +53,7 @@ public class NewsDaoImpl extends BaseDao implements NewsDao {
                         "\n" + resultSet.getString("news_text") + " \n");
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.out.println(e);
         } finally {
             try {
                 if (resultSet != null)
@@ -76,14 +77,40 @@ public class NewsDaoImpl extends BaseDao implements NewsDao {
     }
 
     @Override
-    public boolean deleteNews(Long id) {
-        String sql = "";
+    public boolean deleteNews(int id) {
+        String sql = "DELETE FROM news \n" +
+                "WHERE id = ?";
+
+        try (Connection connection = connect();
+        PreparedStatement preparedStatement = connection.prepareStatement(sql)){
+            preparedStatement.setLong(1, id);
+            return preparedStatement.executeUpdate() > 0;
+        } catch (SQLException e) {
+            System.out.println(e);
+        }
         return false;
     }
 
     @Override
-    public boolean changeTextTitleNews(Long id) {
-        String sql = "";
+    public boolean changeTextTitleNews(int id) {
+        String sql = "UPDATE news \n" +
+                "SET news_title = ?, news_text = ?\n" +
+                "WHERE id = ?;";
+
+        try (Connection connection = connect();
+        PreparedStatement preparedStatement = connection.prepareStatement(sql)){
+
+            System.out.println("Enter title to change: ");
+            preparedStatement.setString(1, new Scanner(System.in).nextLine());
+            System.out.println("Enter text to change: ");
+            preparedStatement.setString(2, new Scanner(System.in).nextLine());
+            preparedStatement.setInt(3, id);
+
+            return preparedStatement.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            System.out.println(e);
+        }
         return false;
     }
 }
